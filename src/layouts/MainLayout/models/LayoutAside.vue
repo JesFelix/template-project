@@ -4,7 +4,7 @@
       <el-icon :size="22">
         <Monitor />
       </el-icon>
-      <span v-show="!collapse" class="logo-text">管理后台</span>
+      <span v-show="!collapse" class="logo-text">{{ t("app.name") }}</span>
     </div>
     <el-scrollbar class="menu-scrollbar">
       <el-menu
@@ -18,16 +18,16 @@
           <el-sub-menu v-if="item.children?.length" :index="item.path">
             <template #title>
               <el-icon><component :is="item.icon" /></el-icon>
-              <span>{{ item.title }}</span>
+              <span>{{ t(item.title) }}</span>
             </template>
             <el-menu-item v-for="child in item.children" :key="child.path" :index="child.path">
               <el-icon><component :is="child.icon" /></el-icon>
-              <template #title>{{ child.title }}</template>
+              <template #title>{{ t(child.title) }}</template>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="item.path">
             <el-icon><component :is="item.icon" /></el-icon>
-            <template #title>{{ item.title }}</template>
+            <template #title>{{ t(item.title) }}</template>
           </el-menu-item>
         </template>
       </el-menu>
@@ -39,10 +39,12 @@
 import { useRoute } from "vue-router";
 import { Monitor } from "@element-plus/icons-vue";
 import { menus } from "./menus";
+import { useI18nGlobal } from "../../../locales";
 
 defineProps<{ collapse: boolean }>();
 
 const route = useRoute();
+const { t } = useI18nGlobal();
 </script>
 
 <style lang="scss" scoped>

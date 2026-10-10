@@ -11,13 +11,13 @@
           :key="item.path"
           :to="index === breadcrumbs.length - 1 ? undefined : item.path"
         >
-          {{ item.title }}
+          {{ t(item.title) }}
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
     <div class="header-right">
-      <el-tooltip content="主题设置" placement="bottom">
+      <el-tooltip :content="t('menu.theme')" placement="bottom">
         <el-icon
           class="header-action"
           :class="{ active: route.path === '/theme' }"
@@ -26,7 +26,7 @@
           <Brush />
         </el-icon>
       </el-tooltip>
-      <el-tooltip content="系统设置" placement="bottom">
+      <el-tooltip :content="t('menu.settings')" placement="bottom">
         <el-icon
           class="header-action"
           :class="{ active: route.path === '/settings' }"
@@ -44,16 +44,21 @@ import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Brush, Expand, Fold, Setting } from "@element-plus/icons-vue";
 import { menus } from "./menus";
+import { useI18nGlobal } from "../../../locales";
 
 defineProps<{ collapse: boolean }>();
 const emit = defineEmits<{ toggle: [] }>();
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18nGlobal();
 
-/** 面包屑：根据当前路由在菜单配置中的位置生成 */
+/**
+ * 面包屑：根据当前路由在菜单配置中的位置生成
+ * title 存的是 i18n key，由模板统一 t() 翻译，切换语言时才会跟着变
+ */
 const breadcrumbs = computed(() => {
-  const items = [{ path: "/dashboard", title: "首页" }];
+  const items = [{ path: "/dashboard", title: "menu.dashboard" }];
   if (route.path === "/dashboard") return items;
 
   for (const menu of menus) {

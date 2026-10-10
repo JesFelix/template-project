@@ -11,24 +11,33 @@
 
     <el-card shadow="never" class="welcome-card">
       <template #header>
-        <span>使用说明</span>
+        <span>{{ t("dashboard.usage.title") }}</span>
       </template>
-      <p>这是管理系统后台的主布局示例页面。</p>
+      <p>{{ t("dashboard.usage.intro") }}</p>
       <ul>
-        <li>左侧为可折叠菜单（配置见 <code>src/layouts/MainLayout/index.vue</code>）</li>
-        <li>顶部为面包屑导航与用户下拉菜单</li>
-        <li>路由配置见 <code>src/router/index.ts</code></li>
+        <li>
+          {{ t("dashboard.usage.menu") }}<code>src/layouts/MainLayout/index.vue</code>
+        </li>
+        <li>{{ t("dashboard.usage.header") }}</li>
+        <li>
+          {{ t("dashboard.usage.router") }}<code>src/router/index.ts</code>
+        </li>
       </ul>
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18nGlobal } from "../../locales";
+
+const { t } = useI18nGlobal();
+
+// label 存 i18n key，模板里由 t() 翻译
 const stats = [
-  { label: "今日访问", value: 1024 },
-  { label: "新增用户", value: 68 },
-  { label: "订单数量", value: 356 },
-  { label: "待办事项", value: 12 },
+  { label: "dashboard.stats.visits", value: 1024 },
+  { label: "dashboard.stats.newUsers", value: 68 },
+  { label: "dashboard.stats.orders", value: 356 },
+  { label: "dashboard.stats.todos", value: 12 },
 ];
 </script>
 

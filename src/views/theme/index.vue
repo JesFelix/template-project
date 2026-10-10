@@ -2,7 +2,7 @@
   <div class="theme-page">
     <el-card shadow="never">
       <template #header>
-        <span>外观模式</span>
+        <span>{{ t("theme.appearance") }}</span>
       </template>
       <div class="mode-group">
         <div
@@ -13,20 +13,20 @@
           <el-icon :size="26">
             <Sunny />
           </el-icon>
-          <span>浅色</span>
+          <span>{{ t("theme.light") }}</span>
         </div>
         <div class="mode-item" :class="{ active: config.mode === 'dark' }" @click="setMode('dark')">
           <el-icon :size="26">
             <Moon />
           </el-icon>
-          <span>深色</span>
+          <span>{{ t("theme.dark") }}</span>
         </div>
       </div>
     </el-card>
 
     <el-card shadow="never">
       <template #header>
-        <span>主题色</span>
+        <span>{{ t("theme.primaryColor") }}</span>
       </template>
       <div class="color-group">
         <span
@@ -47,10 +47,10 @@
 
     <el-card shadow="never">
       <template #header>
-        <span>重置</span>
+        <span>{{ t("theme.reset") }}</span>
       </template>
-      <p class="tip">主题偏好保存在本地，下次启动时会自动应用。</p>
-      <el-button @click="resetTheme">恢复默认主题</el-button>
+      <p class="tip">{{ t("theme.tip") }}</p>
+      <el-button @click="resetTheme">{{ t("theme.resetAction") }}</el-button>
     </el-card>
   </div>
 </template>
@@ -58,7 +58,9 @@
 <script setup lang="ts">
 import { Check, Moon, Sunny } from "@element-plus/icons-vue";
 import { useTheme } from "../../composables/useTheme";
+import { useI18nGlobal } from "../../locales";
 
+const { t } = useI18nGlobal();
 const { config, setMode, setPrimaryColor, resetTheme } = useTheme();
 
 const presetColors = [

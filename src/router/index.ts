@@ -16,19 +16,20 @@ const routes: RouteRecordRaw[] = [
         path: "dashboard",
         name: "Dashboard",
         component: () => import("../views/dashboard/index.vue"),
-        meta: { title: "首页" },
+        // meta.title 存的是 i18n key，展示前由面包屑用 t() 翻译
+        meta: { title: "menu.dashboard" },
       },
       {
         path: "theme",
         name: "Theme",
         component: () => import("../views/theme/index.vue"),
-        meta: { title: "主题设置" },
+        meta: { title: "menu.theme" },
       },
       {
         path: "settings",
         name: "Settings",
         component: () => import("../views/settings/index.vue"),
-        meta: { title: "系统设置" },
+        meta: { title: "menu.settings" },
       },
     ],
   },
