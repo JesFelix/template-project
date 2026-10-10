@@ -100,6 +100,6 @@ const resetSettings = () => {
 
 <style lang="scss" scoped>
 .settings-page {
-  max-width: 760px;
+  max-width: 1080px;
 }
 </style>

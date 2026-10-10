@@ -82,7 +82,7 @@ const handleColorChange = (color: unknown) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 900px;
+  max-width: 1080px;
 }
 
 .mode-group {
