@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col v-for="item in stats" :key="item.label" :xs="12" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card">
-          <div class="stat-label">{{ item.label }}</div>
+          <div class="stat-label">{{ t(item.label) }}</div>
           <div class="stat-value">{{ item.value }}</div>
         </el-card>
       </el-col>

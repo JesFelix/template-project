@@ -17,10 +17,11 @@
 
       <!--
         界面语言不做本地表单持久化：它由 i18n 模块自己管（app:locale），
-        这里只做单向读取 + change 回调，避免出现两份语言状态互相打架
+        这里只做单向读取，change 直接交给 setLocale 校验并写入，
+        避免出现两份语言状态互相打架（顶栏的语言切换图标用的是同一套）
       -->
       <el-form-item :label="t('settings.language')">
-        <el-select :model-value="locale" style="width: 320px" @change="handleLocaleChange">
+        <el-select :model-value="locale" style="width: 320px" @change="setLocale">
           <el-option v-for="item in localeOptions" :key="item.value" v-bind="item" />
         </el-select>
       </el-form-item>
@@ -60,16 +61,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import {
-  SUPPORTED_LOCALES,
-  setLocale,
-  useI18nGlobal,
-  locale,
-  localeOptions,
-} from "../../locales";
-import type { SupportedLocale } from "../../locales";
+import { setLocale, useI18nGlobal, locale, localeOptions } from "../../locales";
+import { readObject, removeStorage, synced, writeObject } from "../../services/storage";
 
 const { t } = useI18nGlobal();
 
@@ -91,21 +86,18 @@ const defaultForm: SettingsForm = {
   keepState: true,
 };
 
-const form = ref<SettingsForm>({ ...defaultForm });
+const loadForm = () => readObject(STORAGE_KEY, defaultForm);
 
-try {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) form.value = { ...defaultForm, ...(JSON.parse(raw) as Partial<SettingsForm>) };
-} catch {
-  // 本地数据损坏时回退到默认配置
-}
+// 先吃 localStorage 缓存立即渲染；SQLite 里的数据可能更新，对账完再刷一次
+const form = ref<SettingsForm>(loadForm());
 
-// el-select 拿到的是宽泛类型，先校验再交给 setLocale 统一写入 i18n 并持久化
-const handleLocaleChange = (value: unknown) => {
-  if (typeof value === "string" && value in SUPPORTED_LOCALES) {
-    setLocale(value as SupportedLocale);
-  }
-};
+watch(
+  synced,
+  (ready) => {
+    if (ready) form.value = loadForm();
+  },
+  { immediate: true },
+);
 
 const chooseCacheDir = () => {
   // 离线工具：可调用 Tauri 的 dialog 插件选择目录
@@ -113,13 +105,13 @@ const chooseCacheDir = () => {
 };
 
 const saveSettings = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(form.value));
+  writeObject(STORAGE_KEY, form.value);
   ElMessage.success(t("settings.toast.saved"));
 };
 
 const resetSettings = () => {
   form.value = { ...defaultForm };
-  localStorage.removeItem(STORAGE_KEY);
+  removeStorage(STORAGE_KEY);
   ElMessage.success(t("settings.toast.resetDone"));
 };
 </script>

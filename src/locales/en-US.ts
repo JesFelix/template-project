@@ -13,6 +13,9 @@ const enUS: MessageSchema = {
     theme: "Theme",
     settings: "Settings",
   },
+  header: {
+    language: "Switch Language",
+  },
   dashboard: {
     stats: {
       visits: "Visits Today",

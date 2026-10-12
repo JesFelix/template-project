@@ -2,6 +2,7 @@ import { computed } from "vue";
 import { createI18n, useI18n as useVueI18n } from "vue-i18n";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import en from "element-plus/es/locale/lang/en";
+import { readStorage, writeStorage } from "../services/storage";
 import zhCN from "./zh-CN";
 import enUS from "./en-US";
 
@@ -22,9 +23,12 @@ const ELEMENT_PLUS_LOCALES: Record<SupportedLocale, typeof zhCn> = {
   "en-US": en,
 };
 
+/** SUPPORTED_LOCALES 的合法 code 集合；用 Set 而不是 `in`，避免命中原型链上的属性 */
+const LOCALE_CODES = new Set<string>(Object.keys(SUPPORTED_LOCALES));
+
 function loadLocale(): SupportedLocale {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved !== null && saved in SUPPORTED_LOCALES) return saved as SupportedLocale;
+  const saved = readStorage(STORAGE_KEY);
+  if (saved !== null && LOCALE_CODES.has(saved)) return saved as SupportedLocale;
   return FALLBACK_LOCALE;
 }
 
@@ -57,10 +61,24 @@ export function applyLocale(): void {
   document.documentElement.lang = locale.value;
 }
 
-/** 切换语言并持久化，下次启动自动应用 */
-export function setLocale(value: SupportedLocale): void {
-  locale.value = value;
-  localStorage.setItem(STORAGE_KEY, value);
+/**
+ * 与 SQLite 对账后重放：initStorage 可能修正了缓存，
+ * 需要重新读取并应用，否则界面上还是启动时那份旧语言
+ */
+export function reloadLocale(): void {
+  locale.value = loadLocale();
+  applyLocale();
+}
+
+/**
+ * 切换语言并持久化，下次启动自动应用。
+ * 入参收成 unknown：el-dropdown 的 command、el-select 的 change 都是宽泛类型，
+ * 这里统一校验并忽略非法值，模板可以直接 `@command="setLocale"` 绑定，不用再包一层处理器
+ */
+export function setLocale(value: unknown): void {
+  if (typeof value !== "string" || !LOCALE_CODES.has(value)) return;
+  locale.value = value as SupportedLocale;
+  writeStorage(STORAGE_KEY, value);
   applyLocale();
 }
 

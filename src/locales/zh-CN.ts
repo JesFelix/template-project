@@ -12,6 +12,10 @@ const zhCN = {
     theme: "主题设置",
     settings: "系统设置",
   },
+  header: {
+    /** 顶栏语言切换按钮的 tooltip 与无障碍标签 */
+    language: "切换语言",
+  },
   dashboard: {
     stats: {
       visits: "今日访问",

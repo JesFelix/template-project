@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { readObject, writeObject } from "../services/storage";
 
 export type ThemeMode = "light" | "dark";
 
@@ -35,17 +36,7 @@ function mix(color: string, target: string, weight: number): string {
   return `#${channel(r1, r2)}${channel(g1, g2)}${channel(b1, b2)}`;
 }
 
-function loadConfig(): ThemeConfig {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULT_CONFIG, ...(JSON.parse(raw) as Partial<ThemeConfig>) };
-  } catch {
-    // 本地数据损坏时回退到默认配置
-  }
-  return { ...DEFAULT_CONFIG };
-}
-
-const config = ref<ThemeConfig>(loadConfig());
+const config = ref<ThemeConfig>(readObject(STORAGE_KEY, DEFAULT_CONFIG));
 
 /** 把当前配置应用到 document（应用启动时调用一次，避免主题闪烁） */
 export function applyTheme(): void {
@@ -65,8 +56,17 @@ export function applyTheme(): void {
   root.style.setProperty("--el-color-primary-dark-2", mix(primaryColor, "#000000", 0.2));
 }
 
+/**
+ * 与 SQLite 对账后重放：initStorage 可能修正了缓存，
+ * 需要重新读取并应用，否则界面上还是启动时那份旧配置
+ */
+export function reloadTheme(): void {
+  config.value = readObject(STORAGE_KEY, DEFAULT_CONFIG);
+  applyTheme();
+}
+
 function persist(): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config.value));
+  writeObject(STORAGE_KEY, config.value);
 }
 
 export function useTheme() {
